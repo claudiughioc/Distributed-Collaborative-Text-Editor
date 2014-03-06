@@ -1,0 +1,57 @@
+<project name="Editor" default="peer1" basedir=".">
+
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+
+	<path id="master-classpath">
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="build">
+		<echo message="${line.separator}Collaborative editor
+			${line.separator}"/>
+		<echo message="Compiling..."/>
+		<mkdir dir="bin/"/>
+		<javac srcdir="." destdir="bin" nowarn="on" 
+			debug="true" optimize="true" verbose="false">
+			<classpath refid="master-classpath"/>
+		</javac>
+	</target>
+
+
+	<target name="peer1" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="127.0.0.1"/>
+			<arg value="50001"/>
+		</java>
+	</target>
+
+	<target name="peer2" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="127.0.0.1"/>
+			<arg value="50002"/>
+		</java>
+	</target>
+
+	<target name="peer3" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="127.0.0.1"/>
+			<arg value="50003"/>
+		</java>
+	</target>
+</project>
