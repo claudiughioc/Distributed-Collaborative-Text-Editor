@@ -81,4 +81,12 @@ public class GUIManager extends JPanel implements DocumentListener {
 		/* Send the event to the communicator */
 		messenger.delete(e.getOffset());
 	}
+
+	public void insertChar(int pos, char c) {
+		System.out.println("Must insert char " + c + " at " + pos);
+	}
+
+	public void deleteChar(int pos) {
+		System.out.println("Must delete char from pos " + pos);
+	}
 }

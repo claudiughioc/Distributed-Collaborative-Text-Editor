@@ -1,4 +1,4 @@
-<project name="Editor" default="peer1" basedir=".">
+<project name="Editor" default="peer0" basedir=".">
 
 	<target name="clean">
 		<delete dir="bin"/>
@@ -22,14 +22,23 @@
 	</target>
 
 
+	<target name="peer0" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="0"/>
+		</java>
+	</target>
+
 	<target name="peer1" depends="build">
 		<java classname="engine.Main" fork="true">
 			<classpath>
 				<pathelement path="bin/"/>
 				<path refid="master-classpath"/>
 			</classpath>
-			<arg value="127.0.0.1"/>
-			<arg value="50001"/>
+			<arg value="1"/>
 		</java>
 	</target>
 
@@ -39,19 +48,7 @@
 				<pathelement path="bin/"/>
 				<path refid="master-classpath"/>
 			</classpath>
-			<arg value="127.0.0.1"/>
-			<arg value="50002"/>
-		</java>
-	</target>
-
-	<target name="peer3" depends="build">
-		<java classname="engine.Main" fork="true">
-			<classpath>
-				<pathelement path="bin/"/>
-				<path refid="master-classpath"/>
-			</classpath>
-			<arg value="127.0.0.1"/>
-			<arg value="50003"/>
+			<arg value="2"/>
 		</java>
 	</target>
 </project>

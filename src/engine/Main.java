@@ -1,20 +1,55 @@
 package engine;
 
-import comm.NetworkMessenger;
-
 import gui.GUIManager;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+import comm.NetworkMessenger;
+
 public class Main {
+	private static final String CONFIG_FILE = "peers";
+	public static ArrayList<String> IPAdresses;
+	public static ArrayList<Integer> ports;
+	public static int peerCount;
+	
+	
+	/* Read peer configuration file */
+	public static void readConfiguration() {
+		try {
+			BufferedReader buff = new BufferedReader(new FileReader(CONFIG_FILE));
+			
+			String line = buff.readLine();
+			Main.peerCount = Integer.parseInt(line);
+			Main.IPAdresses = new ArrayList<String>(Main.peerCount);
+			Main.ports = new ArrayList<Integer>(Main.peerCount);
+			
+			for (int i = 0; i < Main.peerCount; i++) {
+				Main.IPAdresses.add(buff.readLine());
+				Main.ports.add(Integer.parseInt(buff.readLine()));
+				System.out.println("Peer " + i + " ip " + IPAdresses.get(i) + " port " + ports.get(i));
+			}
+		} catch (Exception e) {
+			System.out.println("Unable to read configuration file");
+			e.printStackTrace();
+		}
+	}
 
 	public static void main (String [] args) {
-		String IP = args[0];
-		String port = args[1];
+		int peerIndex = Integer.parseInt(args[0]);
+
+		/* Read peer configuration file */
+		readConfiguration();
 		
 		/* Start the network communicator */
-		NetworkMessenger ncomm = new NetworkMessenger(IP, port);
+		NetworkMessenger ncomm = new NetworkMessenger(peerIndex);
 		
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(ncomm);
+		ncomm.connectToGUI(gui);
+		ncomm.start();
+		
 		gui.showGUI();
 	}
 }
