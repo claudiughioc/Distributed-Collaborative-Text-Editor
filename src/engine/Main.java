@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import comm.NetworkMessenger;
+import comm.NetworkManager;
 
 public class Main {
 	private static final String CONFIG_FILE = "peers";
@@ -43,7 +43,7 @@ public class Main {
 		readConfiguration();
 		
 		/* Start the network communicator */
-		NetworkMessenger ncomm = new NetworkMessenger(peerIndex);
+		NetworkManager ncomm = new NetworkManager(peerIndex);
 		
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(ncomm);
