@@ -15,4 +15,9 @@ public class TextMessage implements Serializable {
 		this.c = c;
 		this.type = type;
 	}
+
+	public String toString() {
+		String s = "Position " + pos + " char " + c + " type " + type;
+		return s;
+	}
 }

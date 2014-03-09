@@ -11,7 +11,7 @@ public class NetworkManager extends Thread implements Messenger {
 	private int peerIndex;
 	
 	private ArrayList<Sender> senders;
-	private Receiver receiver;
+	private ReceiveManager receiver;
 	
 	public NetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
@@ -27,7 +27,7 @@ public class NetworkManager extends Thread implements Messenger {
 		try {
 			/* Create the listener socket */
 			ServerSocket listener = new ServerSocket(Main.ports.get(peerIndex));
-			receiver = new Receiver(listener, gui);
+			receiver = new ReceiveManager(listener, gui);
 			
 			
 			/* Create the sender threads */
@@ -46,11 +46,19 @@ public class NetworkManager extends Thread implements Messenger {
 	
 	public void insert(int pos, char c) {
 		System.out.println("I am going to broadcast an insertion " + c + " at " + pos);
+
+		TextMessage tm = new TextMessage(pos, c, TextMessage.INSERT);
+		for (int i = 0; i < Main.peerCount - 1; i++)
+			senders.get(i).send(tm);
 	}
 
 	
 	public void delete(int pos) {
 		System.out.println("I am going to broadcast a deletion at " + pos);
+		
+		TextMessage tm = new TextMessage(pos, 'q', TextMessage.DELETE);
+		for (int i = 0; i < Main.peerCount - 1; i++)
+			senders.get(i).send(tm);
 	}
 	
 	
