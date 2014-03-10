@@ -51,5 +51,18 @@ public class Main {
 		ncomm.start();
 		
 		gui.showGUI();
+		
+		
+		/* Check if the test driver needs to run */
+		if (args[1].equals("test")) {
+			
+			/* Wait for all the servers to start */
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {}
+			
+			/* Run the test */
+			TestDriver.test(peerIndex, ncomm);
+		}
 	}
 }

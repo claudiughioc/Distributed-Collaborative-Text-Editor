@@ -128,31 +128,41 @@ public class GUIManager extends JFrame implements DocumentListener {
 		messenger.delete(e.getOffset());
 	}
 
+	
+	/* Insert a char in document */
+	public void insertCharInDoc(int pos, char c) {
+		try {
+			textArea.getDocument().insertString(pos, Character.toString(c), null);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/* Insert a char as dictated by other peers */
 	public void insertChar(int pos, char c) {
 		System.out.println("Must insert char " + c + " at " + pos);
 		
 		inserting = true;
-		try {
-			textArea.getDocument().insertString(pos, Character.toString(c), null);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
+		insertCharInDoc(pos, c);
 		inserting = false;
 	}
 
+	
+	/* Delete a char from the document */
+	public void deleteCharFromDoc(int pos) {
+		try {
+			textArea.getDocument().remove(pos, 1);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/* Delete a char, as dictated by other peers */
 	public void deleteChar(int pos) {
 		System.out.println("Must delete char from pos " + pos);
 		
 		deleting = true;
-		try {
-			textArea.getDocument().remove(pos, 1);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
+		deleteCharFromDoc(pos);
 		deleting = false;
 	}
 }

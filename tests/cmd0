@@ -1,0 +1,10 @@
+9
+INS 0 a
+INS 1 b
+INS 2 a
+INS 3 a
+INS 4 a
+INS 5 a
+INS 6 d
+INS 7 a
+DEL 7

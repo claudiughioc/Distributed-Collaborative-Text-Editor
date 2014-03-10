@@ -32,6 +32,17 @@
 		</java>
 	</target>
 
+	<target name="peer0_test" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="0"/>
+			<arg value="test"/>
+		</java>
+	</target>
+
 	<target name="peer1" depends="build">
 		<java classname="engine.Main" fork="true">
 			<classpath>
@@ -39,6 +50,17 @@
 				<path refid="master-classpath"/>
 			</classpath>
 			<arg value="1"/>
+		</java>
+	</target>
+
+	<target name="peer1_test" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="1"/>
+			<arg value="test"/>
 		</java>
 	</target>
 
@@ -51,4 +73,16 @@
 			<arg value="2"/>
 		</java>
 	</target>
+
+	<target name="peer2_test" depends="build">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="2"/>
+			<arg value="test"/>
+		</java>
+	</target>
+
 </project>
