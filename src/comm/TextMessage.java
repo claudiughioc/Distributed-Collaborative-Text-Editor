@@ -7,17 +7,21 @@ public class TextMessage implements Serializable {
 	public static final int INSERT	= 1;
 	public static final int DELETE	= 2;
 	
-	public int pos, type;
+	public int pos, type, sender;
 	public char c;
+	public TimeVector msgVT;
 	
-	public TextMessage(int pos, char c, int type) {
+	public TextMessage(int pos, char c, int type,
+			int sender, TimeVector msgVT) {
 		this.pos = pos;
 		this.c = c;
 		this.type = type;
+		this.msgVT = msgVT;
+		this.sender = sender;
 	}
 
 	public String toString() {
-		String s = "Position " + pos + " char " + c + " type " + type;
+		String s = "From " + sender + ", position " + pos + " char " + c + " type " + type + " vt: " + msgVT;
 		return s;
 	}
 }

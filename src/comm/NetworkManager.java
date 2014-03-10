@@ -7,14 +7,18 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 
 public class NetworkManager extends Thread implements Messenger {
-	private GUIManager gui;
+	public GUIManager gui;
 	private int peerIndex;
 	
 	private ArrayList<Sender> senders;
 	private ReceiveManager receiver;
+	private TimeVector timeVector;
 	
 	public NetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
+		
+		/* Create the time vector */
+		timeVector = new TimeVector(Main.peerCount);
 	}
 
 	
@@ -27,7 +31,7 @@ public class NetworkManager extends Thread implements Messenger {
 		try {
 			/* Create the listener socket */
 			ServerSocket listener = new ServerSocket(Main.ports.get(peerIndex));
-			receiver = new ReceiveManager(listener, gui);
+			receiver = new ReceiveManager(listener, this);
 			
 			
 			/* Create the sender threads */
@@ -46,8 +50,12 @@ public class NetworkManager extends Thread implements Messenger {
 	
 	public void insert(int pos, char c) {
 		System.out.println("I am going to broadcast an insertion " + c + " at " + pos);
+		
+		/* Update the time vector */
+		timeVector.VT.set(peerIndex, timeVector.VT.get(peerIndex) + 1);
 
-		TextMessage tm = new TextMessage(pos, c, TextMessage.INSERT);
+		/* Create the message and send it */
+		TextMessage tm = new TextMessage(pos, c, TextMessage.INSERT, peerIndex, timeVector);
 		for (int i = 0; i < Main.peerCount - 1; i++)
 			senders.get(i).send(tm);
 	}
@@ -56,7 +64,7 @@ public class NetworkManager extends Thread implements Messenger {
 	public void delete(int pos) {
 		System.out.println("I am going to broadcast a deletion at " + pos);
 		
-		TextMessage tm = new TextMessage(pos, 'q', TextMessage.DELETE);
+		TextMessage tm = new TextMessage(pos, 'q', TextMessage.DELETE, peerIndex, timeVector);
 		for (int i = 0; i < Main.peerCount - 1; i++)
 			senders.get(i).send(tm);
 	}
@@ -76,5 +84,14 @@ public class NetworkManager extends Thread implements Messenger {
 	public void connectToGUI(GUIManager gui) {
 		this.gui = gui;
 		initiateCommThreads();
+	}
+
+	public synchronized void updateVTDeliver(TextMessage message) {
+		TimeVector msgVT = message.msgVT;
+		int sender = message.sender;
+		
+		for (int i = 0; i < Main.peerCount; i++)
+			if (timeVector.VT.get(i) < msgVT.VT.get(i))
+				timeVector.VT.set(i, msgVT.VT.get(i));
 	}
 }

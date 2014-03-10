@@ -7,11 +7,11 @@ import java.net.Socket;
 
 public class ReceiveManager extends Thread {
 	private ServerSocket serverSocket;
-	private GUIManager gui;
+	private NetworkManager nm;
 
-	public ReceiveManager(ServerSocket serverSocket, GUIManager gui) {
+	public ReceiveManager(ServerSocket serverSocket, NetworkManager nm) {
 		this.serverSocket = serverSocket;
-		this.gui = gui;
+		this.nm = nm;
 	}
 	
 	public void run() {
@@ -21,7 +21,7 @@ public class ReceiveManager extends Thread {
 		try {
             while (true) {
                 Socket socket = serverSocket.accept();
-                ReceiverThread receiver = new ReceiverThread(socket, gui);
+                ReceiverThread receiver = new ReceiverThread(socket, nm);
                 receiver.start();
             }
         }

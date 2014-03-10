@@ -9,10 +9,12 @@ import java.net.Socket;
 public class ReceiverThread extends Thread {
 	private Socket s;
 	private GUIManager gui;
+	private NetworkManager nm;
 	
-	public ReceiverThread(Socket s, GUIManager gui) {
+	public ReceiverThread(Socket s, NetworkManager nm) {
 		this.s = s;
-		this.gui = gui;
+		this.nm = nm;
+		this.gui = nm.gui;
 	}
 	
 	public void run() {
@@ -29,22 +31,29 @@ public class ReceiverThread extends Thread {
 				TextMessage request = (TextMessage)Utils.deserialize(bytes);
 				
 				System.out.println("[TCPServerThread] " + this.hashCode() + " got request " + request);
-				
-				
-				/* Send request to GUI */
-				switch (request.type) {
-				case TextMessage.DELETE:
-					gui.deleteChar(request.pos);
-					break;
-					
-				case TextMessage.INSERT:
-					gui.insertChar(request.pos, request.c);
-					break;
-				}
+				deliverMessage(request);
 			}
 		} catch (Exception e) {
 			System.err.println("TCPServerThread-" + this.hashCode() + " exception: " + e);
 			e.printStackTrace();
+		}
+	}
+
+	
+	/* Deliver message to GUI */
+	public void deliverMessage(TextMessage request) {
+		/* Update receiver's vector time */
+		nm.updateVTDeliver(request);
+		
+		/* Perform action */
+		switch (request.type) {
+		case TextMessage.DELETE:
+			gui.deleteChar(request.pos);
+			break;
+			
+		case TextMessage.INSERT:
+			gui.insertChar(request.pos, request.c);
+			break;
 		}
 	}
 }
