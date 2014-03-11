@@ -31,6 +31,8 @@ public class TestDriver {
 				/* Wait before executing next task */
 				Thread.sleep(randomWithRange(1, 5) * 100);
 			}
+			
+			buff.close();
 		} catch (Exception e) {
 			System.out.println("Unable to read command file");
 			e.printStackTrace();

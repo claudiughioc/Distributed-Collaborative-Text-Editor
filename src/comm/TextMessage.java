@@ -9,19 +9,19 @@ public class TextMessage implements Serializable {
 	
 	public int pos, type, sender;
 	public char c;
-	public TimeVector msgVT;
+	public TimeVector timeVector;
 	
 	public TextMessage(int pos, char c, int type,
 			int sender, TimeVector msgVT) {
 		this.pos = pos;
 		this.c = c;
 		this.type = type;
-		this.msgVT = msgVT;
+		this.timeVector = msgVT;
 		this.sender = sender;
 	}
 
 	public String toString() {
-		String s = "From " + sender + ", position " + pos + " char " + c + " type " + type + " vt: " + msgVT;
+		String s = "From " + sender + ", position " + pos + " char " + c + " type " + type + " vt: " + timeVector;
 		return s;
 	}
 }

@@ -23,6 +23,7 @@ import javax.swing.text.Document;
 import comm.Messenger;
 
 public class GUIManager extends JFrame implements DocumentListener {
+	private static final long serialVersionUID = 1L;
 	private JTextArea textArea;
 	private Messenger messenger;
 	private boolean inserting, deleting;

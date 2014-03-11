@@ -1,7 +1,5 @@
 package comm;
 
-import gui.GUIManager;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 

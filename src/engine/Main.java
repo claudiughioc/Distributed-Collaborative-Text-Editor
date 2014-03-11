@@ -30,6 +30,7 @@ public class Main {
 				Main.ports.add(Integer.parseInt(buff.readLine()));
 				System.out.println("Peer " + i + " ip " + IPAdresses.get(i) + " port " + ports.get(i));
 			}
+			buff.close();
 		} catch (Exception e) {
 			System.out.println("Unable to read configuration file");
 			e.printStackTrace();
@@ -54,7 +55,7 @@ public class Main {
 		
 		
 		/* Check if the test driver needs to run */
-		if (args[1].equals("test")) {
+		if (args.length > 1 && args[1].equals("test")) {
 			
 			/* Wait for all the servers to start */
 			try {
