@@ -20,15 +20,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import comm.Messenger;
+import comm.NetworkManager;
 
 public class GUIManager extends JFrame implements DocumentListener {
 	private static final long serialVersionUID = 1L;
 	private JTextArea textArea;
-	private Messenger messenger;
+	private NetworkManager messenger;
 	private boolean inserting, deleting;
 
-	public GUIManager(Messenger messenger) {
+	public GUIManager(NetworkManager messenger) {
 
 		/* Save the communicator */
 		this.messenger = messenger;

@@ -1,5 +1,7 @@
 package engine;
 
+import gui.GUIManager;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -13,6 +15,7 @@ public class TestDriver {
 
 	public static void test(int peerIndex, NetworkManager nm) {
 		int commands;
+		GUIManager gui = nm.getGUI();
 		
 		try {
 			BufferedReader buff = new BufferedReader(new FileReader(COMMAND_FILE + peerIndex));
@@ -23,10 +26,11 @@ public class TestDriver {
 				System.out.println("Command " + command);
 				String items[] = command.split(" ");
 				
+				
 				if (items[0].equals(COMMAND_INS))
-					nm.gui.insertCharInDoc(Integer.parseInt(items[1]), items[2].charAt(0));
+					gui.insertCharInDoc(Integer.parseInt(items[1]), items[2].charAt(0));
 				if (items[0].equals(COMMAND_DEL))
-					nm.gui.deleteCharFromDoc(Integer.parseInt(items[1]));
+					gui.deleteCharFromDoc(Integer.parseInt(items[1]));
 				
 				/* Wait before executing next task */
 				Thread.sleep(randomWithRange(1, 5) * 100);

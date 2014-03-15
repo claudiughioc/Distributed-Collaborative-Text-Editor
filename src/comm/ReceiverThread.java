@@ -7,9 +7,9 @@ import engine.Utils;
 
 public class ReceiverThread extends Thread {
 	private Socket s;
-	private NetworkManager nm;
+	private CBCASTNetworkManager nm;
 	
-	public ReceiverThread(Socket s, NetworkManager nm) {
+	public ReceiverThread(Socket s, CBCASTNetworkManager nm) {
 		this.s = s;
 		this.nm = nm;
 	}

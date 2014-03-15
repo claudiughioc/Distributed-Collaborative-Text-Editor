@@ -5,12 +5,12 @@ import java.util.Queue;
 
 import engine.Main;
 
-public class CBCAST {
+public class CBCASTHandler {
 	/* This is the waiting list of CBCAST */
 	private Queue<TextMessage> waitingList;
-	private NetworkManager nm;
+	private CBCASTNetworkManager nm;
 	
-	public CBCAST(NetworkManager nm) {
+	public CBCASTHandler(CBCASTNetworkManager nm) {
 		waitingList = new LinkedList<TextMessage>();
 		this.nm = nm;
 	}
@@ -19,7 +19,7 @@ public class CBCAST {
 		/* Check all messages in the queue to see
 		 * if any of them needs to be delivered
 		 */
-		synchronized (CBCAST.class) {
+		synchronized (CBCASTHandler.class) {
 			for (TextMessage tm : waitingList)
 				if (!delayMessage(tm)) {
 					waitingList.remove(tm);
@@ -54,7 +54,7 @@ public class CBCAST {
 
 	public void messageReceived(TextMessage tm) {
 		if (delayMessage(tm))
-			synchronized (CBCAST.class) {
+			synchronized (CBCASTHandler.class) {
 				System.out.println("                   ADDING TO QUEEUE");
 				waitingList.add(tm);
 			}
