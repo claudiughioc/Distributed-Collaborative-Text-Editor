@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import comm.CBCASTNetworkManager;
 import comm.NetworkManager;
+import comm.TotalOrderNetworkManager;
 
 public class Main {
 	private static final String CONFIG_FILE 	= "peers";
@@ -42,8 +43,8 @@ public class Main {
 			/* Read the algorithm to use */
 			Main.algorithm = buff.readLine();
 			System.out.println("Using the " + Main.algorithm + " algorithm");
-			if (Main.algorithm.contains(TOTAL_ORDER_ALGO)) {
-				Main.rootPeer = Integer.parseInt(Main.algorithm);
+			if (Main.algorithm.equals(TOTAL_ORDER_ALGO)) {
+				Main.rootPeer = Integer.parseInt(buff.readLine());
 				System.out.println("Root peer " + Main.rootPeer);
 			}
 
@@ -64,6 +65,8 @@ public class Main {
 		/* Start the network communicator */
 		if (Main.algorithm.equals(CBCAST_ALGO))
 			nManag = new CBCASTNetworkManager(peerIndex);
+		if (Main.algorithm.equals(TOTAL_ORDER_ALGO))
+			nManag = new TotalOrderNetworkManager(peerIndex);
 
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(nManag);

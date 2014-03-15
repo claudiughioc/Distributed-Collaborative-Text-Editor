@@ -15,6 +15,7 @@ public class TestDriver {
 
 	public static void test(int peerIndex, NetworkManager nm) {
 		int commands;
+		char theChar;
 		GUIManager gui = nm.getGUI();
 		
 		try {
@@ -25,10 +26,14 @@ public class TestDriver {
 				String command = buff.readLine();
 				System.out.println("Command " + command);
 				String items[] = command.split(" ");
+				if (items.length == 2)
+					theChar = ' ';
+				else
+					theChar = items[2].charAt(0);
 				
 				
 				if (items[0].equals(COMMAND_INS))
-					gui.insertCharInDoc(Integer.parseInt(items[1]), items[2].charAt(0));
+					gui.insertCharInDoc(Integer.parseInt(items[1]), theChar);
 				if (items[0].equals(COMMAND_DEL))
 					gui.deleteCharFromDoc(Integer.parseInt(items[1]));
 				

@@ -79,7 +79,7 @@ public class CBCASTNetworkManager extends NetworkManager {
 
 
 	public void run() {
-		System.out.println("Network manager " + peerIndex + " starts the threads ");
+		System.out.println("CBCAST Network manager " + peerIndex + " starts the threads ");
 
 
 		/* Start the receiver and sender sockets */
@@ -107,6 +107,9 @@ public class CBCASTNetworkManager extends NetworkManager {
 		commProto.notifyIncommingMessage();
 	}
 
+	public void onReceive(TextMessage tm) {
+		commProto.messageReceived(tm);
+	}
 
 	/* Deliver message to GUI */
 	public void deliverMessage(TextMessage request) {

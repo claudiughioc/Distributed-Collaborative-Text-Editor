@@ -7,9 +7,9 @@ import engine.Utils;
 
 public class ReceiverThread extends Thread {
 	private Socket s;
-	private CBCASTNetworkManager nm;
+	private NetworkManager nm;
 	
-	public ReceiverThread(Socket s, CBCASTNetworkManager nm) {
+	public ReceiverThread(Socket s, NetworkManager nm) {
 		this.s = s;
 		this.nm = nm;
 	}
@@ -29,7 +29,7 @@ public class ReceiverThread extends Thread {
 				TextMessage request = (TextMessage)Utils.deserialize(bytes);
 				
 				System.out.println("[TCPServerThread] " + this.hashCode() + " got request " + request);
-				nm.commProto.messageReceived(request);
+				nm.onReceive(request);
 			}
 		} catch (Exception e) {
 			System.err.println("TCPServerThread-" + this.hashCode() + " exception: " + e);

@@ -1,10 +1,16 @@
 9
-INS 0 a
-INS 1 b
-INS 2 a
-INS 3 a
-INS 4 a
-INS 5 a
-INS 6 d
-INS 7 a
-DEL 7
+INS 0 S
+INS 1 a
+INS 2 l
+INS 3 u
+INS 4 t
+INS 5 ,
+INS 6  
+INS 7 C
+INS 8 l
+INS 9 a
+INS 10 u
+INS 11 d
+INS 12 i
+INS 13 u
+DEL 13

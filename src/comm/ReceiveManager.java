@@ -5,9 +5,9 @@ import java.net.Socket;
 
 public class ReceiveManager extends Thread {
 	private ServerSocket serverSocket;
-	private CBCASTNetworkManager nm;
+	private NetworkManager nm;
 
-	public ReceiveManager(ServerSocket serverSocket, CBCASTNetworkManager nm) {
+	public ReceiveManager(ServerSocket serverSocket, NetworkManager nm) {
 		this.serverSocket = serverSocket;
 		this.nm = nm;
 	}
