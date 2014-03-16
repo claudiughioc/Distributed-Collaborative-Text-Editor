@@ -5,7 +5,7 @@ import gui.GUIManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import comm.NetworkManager;
+import communication.NetworkManager;
 
 public class TestDriver {
 	public static final String COMMAND_FILE = "tests/cmd";

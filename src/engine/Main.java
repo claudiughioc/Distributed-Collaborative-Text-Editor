@@ -6,9 +6,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import comm.CBCASTNetworkManager;
-import comm.NetworkManager;
-import comm.TotalOrderNetworkManager;
+import threePhaseModule.ThreePhaseNetworkManager;
+
+import centralizedModule.CentralizedNetworkManager;
+
+
+import CBCASTModule.CBCASTNetworkManager;
+
+import communication.NetworkManager;
 
 public class Main {
 	private static final String CONFIG_FILE 	= "peers";
@@ -66,7 +71,9 @@ public class Main {
 		if (Main.algorithm.equals(CBCAST_ALGO))
 			nManag = new CBCASTNetworkManager(peerIndex);
 		if (Main.algorithm.equals(TOTAL_ORDER_ALGO))
-			nManag = new TotalOrderNetworkManager(peerIndex);
+			nManag = new CentralizedNetworkManager(peerIndex);
+		if (Main.algorithm.equals(THREE_PHASE_ALGO))
+			nManag = new ThreePhaseNetworkManager(peerIndex);
 
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(nManag);

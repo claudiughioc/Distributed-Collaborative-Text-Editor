@@ -1,20 +1,25 @@
-package comm;
+package centralizedModule;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
+
+import communication.NetworkManager;
+import communication.ReceiveManager;
+import communication.Sender;
+import communication.TextMessage;
 
 import engine.Main;
 
 import gui.GUIManager;
 
-public class TotalOrderNetworkManager extends NetworkManager {
+public class CentralizedNetworkManager extends NetworkManager {
 	public GUIManager gui;
 	public int peerIndex;
 	private ArrayList<Sender> senders;
 	private Sender peerSender;
 	private ReceiveManager receiver;
 
-	public TotalOrderNetworkManager(int peerIndex) {
+	public CentralizedNetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
 	}
 

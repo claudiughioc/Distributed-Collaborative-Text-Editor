@@ -1,4 +1,4 @@
-package comm;
+package communication;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

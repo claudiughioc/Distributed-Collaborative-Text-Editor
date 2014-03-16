@@ -1,7 +1,10 @@
-package comm;
+package CBCASTModule;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
+import communication.TextMessage;
+import communication.TimeVector;
 
 import engine.Main;
 

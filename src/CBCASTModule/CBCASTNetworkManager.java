@@ -1,10 +1,17 @@
-package comm;
+package CBCASTModule;
 
 import engine.Main;
 import gui.GUIManager;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
+
+import communication.NetworkManager;
+import communication.ReceiveManager;
+import communication.Sender;
+import communication.TextMessage;
+import communication.TimeVector;
+
 
 public class CBCASTNetworkManager extends NetworkManager {
 	public GUIManager gui;

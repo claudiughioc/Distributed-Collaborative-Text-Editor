@@ -20,7 +20,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import comm.NetworkManager;
+import communication.NetworkManager;
 
 public class GUIManager extends JFrame implements DocumentListener {
 	private static final long serialVersionUID = 1L;

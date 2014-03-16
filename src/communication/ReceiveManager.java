@@ -1,4 +1,4 @@
-package comm;
+package communication;
 
 import java.net.ServerSocket;
 import java.net.Socket;
