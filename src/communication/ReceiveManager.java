@@ -3,6 +3,8 @@ package communication;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import engine.Main;
+
 public class ReceiveManager extends Thread {
 	private ServerSocket serverSocket;
 	private NetworkManager nm;
@@ -19,6 +21,7 @@ public class ReceiveManager extends Thread {
 		try {
             while (true) {
                 Socket socket = serverSocket.accept();
+                Main.connectedPeers++;
                 ReceiverThread receiver = new ReceiverThread(socket, nm);
                 receiver.start();
             }

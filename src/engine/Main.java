@@ -24,12 +24,13 @@ public class Main {
 
 	public static ArrayList<String> IPAdresses;
 	public static ArrayList<Integer> ports;
-	public static int peerCount, rootPeer;
+	public static int peerCount, rootPeer, connectedPeers;
 	public static String algorithm;
 
 
 	/* Read peer configuration file */
 	public static void readConfiguration() {
+		Main.connectedPeers = 0;
 		try {
 			BufferedReader buff = new BufferedReader(new FileReader(CONFIG_FILE));
 
