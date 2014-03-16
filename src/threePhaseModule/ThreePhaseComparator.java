@@ -10,6 +10,6 @@ public class ThreePhaseComparator implements Comparator<ThreePhaseTextMessage> {
 		long tp0 = ((ThreePhaseTextMessage)o1).timestamp;
 		long tp1 = ((ThreePhaseTextMessage)o2).timestamp;
 		
-		return (int)(tp1 - tp0);
+		return (int)(tp0 - tp1);
 	}
 }

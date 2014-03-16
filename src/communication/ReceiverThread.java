@@ -23,7 +23,6 @@ public class ReceiverThread extends Thread {
 			/* Wait for messages from the other peer */
 			while(true) {
 				int size = din.readInt();
-				System.out.println("[TCPServerThread] TCP size received " + size);
 				byte[] bytes = new byte[size];
 				din.readFully(bytes);
 				TextMessage request = (TextMessage)Utils.deserialize(bytes);

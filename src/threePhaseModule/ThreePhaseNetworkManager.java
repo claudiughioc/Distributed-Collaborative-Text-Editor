@@ -4,7 +4,6 @@ import engine.Main;
 import gui.GUIManager;
 
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -24,7 +23,7 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 	public GUIManager gui;
 	public long clock, priority;
 
-	public PriorityQueue<ThreePhaseTextMessage> tempQueue, deliverableQueue;
+	public PriorityQueue<ThreePhaseTextMessage> tempQueue;
 	public HashMap<Integer, Status> tempTSS;
 
 	public ThreePhaseNetworkManager(int peerIndex) {
@@ -32,13 +31,12 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 
 		/* Initialize the clock */
 		this.clock = 0;
-		this.mtag = 0;
+		this.mtag = peerIndex * 10000;
 		this.priority = 0;
 
 		/* Initialize the timestamp sorted queues */
 		ThreePhaseComparator tpc = new ThreePhaseComparator();
 		tempQueue = new PriorityQueue<ThreePhaseTextMessage>(10000, tpc);
-		deliverableQueue = new PriorityQueue<ThreePhaseTextMessage>(10000, tpc);
 
 		/* Initialize the Hashmap of temporary timestamps */
 		tempTSS = new HashMap<Integer, Status>();
@@ -47,11 +45,12 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 	@Override
 	public synchronized void insert(int pos, char c) {
 		System.out.println("I am going to broadcast an insertion " + c + " at " + pos);
-		clock++;
+		updateClock(clock + 1);
+		int messageTag = mtag++;
 
 		/* Create the message and send it */
 		ThreePhaseTextMessage tm = new ThreePhaseTextMessage(pos, c, TextMessage.INSERT, peerIndex, null, 
-				mtag, clock, PHASE_1, false);
+				messageTag, clock, PHASE_1, false);
 		for (int i = 0; i < Main.peerCount; i++) {
 			if (i == peerIndex)
 				continue;
@@ -59,18 +58,18 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 		}
 
 		/* Save the initial temporary timestamp for the message */
-		tempTSS.put(mtag, new Status(0, new Long(0)));
-		mtag++;
+		tempTSS.put(messageTag, new Status(0, new Long(0)));
 	}
 
 	@Override
 	public synchronized void delete(int pos) {
 		System.out.println("I am going to broadcast a deletion at " + pos);
-		clock++;
+		updateClock(clock + 1);
+		int messageTag = mtag++;
 
 		/* Create the message and send it */
 		ThreePhaseTextMessage tm = new ThreePhaseTextMessage(pos, 'q', TextMessage.DELETE, peerIndex, null,
-				mtag, clock, PHASE_1, false);
+				messageTag, clock, PHASE_1, false);
 		for (int i = 0; i < Main.peerCount; i++) {
 			if (i == peerIndex)
 				continue;
@@ -78,8 +77,7 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 		}
 
 		/* Save the initial temporary timestamp for the message */
-		tempTSS.put(mtag, new Status(0, new Long(0)));
-		mtag++;
+		tempTSS.put(messageTag, new Status(0, new Long(0)));
 	}
 
 
@@ -171,7 +169,7 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 			}
 			
 			/* Update the clock */
-			clock = clock > status.tempTS ? clock : status.tempTS;
+			updateClock(clock > status.tempTS ? clock : status.tempTS);
 		}
 	}
 
@@ -201,15 +199,23 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 		
 		/* Check for deliverable elements */
 		if (tempQueue.peek().tag == initial.tag) {
+			printQueue();
 			deliverMessage(tm);
 			tempQueue.poll();
-			clock = clock > tptm.timestamp ? clock : tptm.timestamp + 1;
+			updateClock((clock > tptm.timestamp ? clock : tptm.timestamp) + 1);
 			
 			while (!tempQueue.isEmpty() && tempQueue.peek().deliverable) {
 				ThreePhaseTextMessage msg = tempQueue.poll();
 				deliverMessage(msg);
-				clock = clock > msg.timestamp ? clock : msg.timestamp + 1;
+				updateClock((clock > msg.timestamp ? clock : msg.timestamp) + 1);
 			}
+		}
+	}
+	
+	private void printQueue() {
+		System.out.println("Printing queue");
+		for (ThreePhaseTextMessage tm:tempQueue) {
+			System.out.println("Q " + tm);
 		}
 	}
 
@@ -254,5 +260,9 @@ public class ThreePhaseNetworkManager extends NetworkManager {
 			gui.insertChar(request.pos, request.c);
 			break;
 		}
+	}
+	
+	public synchronized void updateClock(long value) {
+		clock = value;
 	}
 }
