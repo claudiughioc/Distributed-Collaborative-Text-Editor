@@ -7,11 +7,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import threePhaseModule.ThreePhaseNetworkManager;
-
-import centralizedModule.CentralizedNetworkManager;
-
-
+import ABCASTModule.ABCASTNetworkManager;
 import CBCASTModule.CBCASTNetworkManager;
+import centralizedModule.CentralizedNetworkManager;
 
 import communication.NetworkManager;
 
@@ -75,6 +73,8 @@ public class Main {
 			nManag = new CentralizedNetworkManager(peerIndex);
 		if (Main.algorithm.equals(THREE_PHASE_ALGO))
 			nManag = new ThreePhaseNetworkManager(peerIndex);
+		if (Main.algorithm.equals(ABCAST_ALGO))
+			nManag = new ABCASTNetworkManager(peerIndex);
 
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(nManag);

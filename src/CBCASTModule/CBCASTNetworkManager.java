@@ -59,7 +59,7 @@ public class CBCASTNetworkManager extends NetworkManager {
 	}
 
 
-	public void insert(int pos, char c) {
+	public synchronized void insert(int pos, char c) {
 		System.out.println("I am going to broadcast an insertion " + c + " at " + pos);
 
 		/* Update the time vector */

@@ -140,7 +140,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	/* Insert a char as dictated by other peers */
-	public void insertChar(int pos, char c) {
+	public synchronized void insertChar(int pos, char c) {
 		System.out.println("Must insert char " + c + " at " + pos);
 		
 		inserting = true;
@@ -159,7 +159,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	/* Delete a char, as dictated by other peers */
-	public void deleteChar(int pos) {
+	public synchronized void deleteChar(int pos) {
 		System.out.println("Must delete char from pos " + pos);
 		
 		deleting = true;

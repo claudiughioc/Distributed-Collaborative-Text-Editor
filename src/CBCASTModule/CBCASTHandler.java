@@ -31,7 +31,7 @@ public class CBCASTHandler {
 		}
 	}
 
-	
+
 	/* Check if a message needs to be delivered or put in the queue */
 	private boolean delayMessage(TextMessage tm) {
 		boolean delay = false;
