@@ -1,16 +1,12 @@
-15
-INS 0 S
+11
 INS 1 a
-INS 2 l
-INS 3 u
-INS 4 t
-INS 5 ,
-INS 6  
-INS 7 C
-INS 8 l
-INS 9 a
-INS 10 u
-INS 11 d
-INS 12 i
-INS 13 u
-DEL 13
+INS 2 n
+INS 4 n
+INS 3 q
+DEL 1
+DEL 2
+INS 1 n
+INS 1 a
+INS 3 x
+DEL 4
+INS 5 a

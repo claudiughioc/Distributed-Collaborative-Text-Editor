@@ -132,6 +132,8 @@ public class GUIManager extends JFrame implements DocumentListener {
 	
 	/* Insert a char in document */
 	public void insertCharInDoc(int pos, char c) {
+		if (pos > textArea.getDocument().getLength() + 1)
+			pos = textArea.getDocument().getLength() + 1;
 		try {
 			textArea.getDocument().insertString(pos, Character.toString(c), null);
 		} catch (BadLocationException e) {
@@ -151,6 +153,8 @@ public class GUIManager extends JFrame implements DocumentListener {
 	
 	/* Delete a char from the document */
 	public void deleteCharFromDoc(int pos) {
+		if (pos > textArea.getDocument().getLength() + 1)
+			pos = textArea.getDocument().getLength() + 1;
 		try {
 			textArea.getDocument().remove(pos, 1);
 		} catch (BadLocationException e) {

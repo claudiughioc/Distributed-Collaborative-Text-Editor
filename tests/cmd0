@@ -1,16 +1,11 @@
-15
-INS 0 S
-INS 1 a
-INS 2 l
-INS 3 u
-INS 4 t
-INS 5 ,
-INS 6  
-INS 7 C
-INS 8 l
-INS 9 a
-INS 10 u
-INS 11 d
-INS 12 i
-INS 13 u
-DEL 13
+ins('a',1)
+ins('n',2)
+ins(' ',4)
+ins('a',3)
+del(1)
+del(2)
+ins('n',1)
+ins('a',1)
+ins('x',3)
+del(4)
+ins('a',5)

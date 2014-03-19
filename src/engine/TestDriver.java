@@ -9,38 +9,31 @@ import communication.NetworkManager;
 
 public class TestDriver {
 	public static final String COMMAND_FILE = "tests/cmd";
-	public static final String COMMAND_INS = "INS";
-	public static final String COMMAND_DEL = "DEL";
+	public static final String COMMAND_INS = "ins";
+	public static final String COMMAND_DEL = "del";
 
 
 	public static void test(int peerIndex, NetworkManager nm) {
 		int commands;
-		char theChar;
 		GUIManager gui = nm.getGUI();
 		
 		try {
 			BufferedReader buff = new BufferedReader(new FileReader(COMMAND_FILE + peerIndex));
-			commands = Integer.parseInt(buff.readLine());
-			
-			for (int i = 0; i < commands; i++) {
+
+			while(true) {
 				String command = buff.readLine();
 				System.out.println("Command " + command);
-				String items[] = command.split(" ");
-				if (items.length == 2)
-					theChar = ' ';
-				else
-					theChar = items[2].charAt(0);
+				if (command == null)
+					break;
 				
-				
-				if (items[0].equals(COMMAND_INS))
-					gui.insertCharInDoc(Integer.parseInt(items[1]), theChar);
-				if (items[0].equals(COMMAND_DEL))
-					gui.deleteCharFromDoc(Integer.parseInt(items[1]));
+				if (command.substring(0, 3).equals(COMMAND_INS))
+					gui.insertCharInDoc(Integer.parseInt(command.substring(8, 9)), command.charAt(5));
+				if (command.substring(0, 3).equals(COMMAND_DEL))
+					gui.deleteCharFromDoc(Integer.parseInt(command.substring(4, 5)));
 				
 				/* Wait before executing next task */
 				Thread.sleep(randomWithRange(1, 5) * 100);
 			}
-			
 			buff.close();
 		} catch (Exception e) {
 			System.out.println("Unable to read command file");
