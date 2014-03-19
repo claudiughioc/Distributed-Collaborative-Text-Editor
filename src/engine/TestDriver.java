@@ -14,7 +14,6 @@ public class TestDriver {
 
 
 	public static void test(int peerIndex, NetworkManager nm) {
-		int commands;
 		GUIManager gui = nm.getGUI();
 		
 		try {
@@ -27,9 +26,9 @@ public class TestDriver {
 					break;
 				
 				if (command.substring(0, 3).equals(COMMAND_INS))
-					gui.insertCharInDoc(Integer.parseInt(command.substring(8, 9)), command.charAt(5));
+					gui.insertCharInDoc(Integer.parseInt(command.substring(8, 9)) - 1, command.charAt(5));
 				if (command.substring(0, 3).equals(COMMAND_DEL))
-					gui.deleteCharFromDoc(Integer.parseInt(command.substring(4, 5)));
+					gui.deleteCharFromDoc(Integer.parseInt(command.substring(4, 5)) - 1);
 				
 				/* Wait before executing next task */
 				Thread.sleep(randomWithRange(1, 5) * 100);
