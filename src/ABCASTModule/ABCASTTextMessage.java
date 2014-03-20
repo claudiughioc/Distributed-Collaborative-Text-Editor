@@ -35,7 +35,7 @@ public class ABCASTTextMessage extends TextMessage {
 	public String toString() {
 		String s = super.toString();
 		s += " phase " + phase + " del " + deliverable;
-		if (phase == SET_ORDER) {
+		if (phase == SET_ORDER && uidList != null) {
 			s += "[";
 			for (int i = 0; i < uidList.size(); i++)
 				s += uidList.get(i) + " ";

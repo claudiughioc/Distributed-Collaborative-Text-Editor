@@ -19,6 +19,7 @@ public class CBCASTHandler {
 	}
 
 	public void notifyIncommingMessage() {
+		System.out.println("CBCAST notifier");
 		/* Check all messages in the queue to see
 		 * if any of them needs to be delivered
 		 */

@@ -3,6 +3,7 @@ package ABCASTModule;
 import java.util.LinkedList;
 
 import communication.TextMessage;
+import communication.TimeVector;
 
 import engine.Main;
 import CBCASTModule.CBCASTNetworkManager;
@@ -10,13 +11,13 @@ import CBCASTModule.CBCASTNetworkManager;
 public class ABCASTNetworkManager extends CBCASTNetworkManager {
 	public boolean hasToken;
 	public int uid;
-	public ABCASTHandler commProto;
+	public ABCASTHandler commProtocol;
 
 	public ABCASTNetworkManager(int peerIndex) {
 		super(peerIndex);
 		uid = peerIndex * 10000;
 
-		commProto = new ABCASTHandler(this);
+		commProtocol = new ABCASTHandler(this);
 
 		/* Initialize the token holder as being the peer 0 */
 		if (peerIndex == 0)
@@ -106,5 +107,36 @@ public class ABCASTNetworkManager extends CBCASTNetworkManager {
 
 	public synchronized void setToken(boolean value) {
 		this.hasToken = value;
+	}
+
+	public void updateVTDeliver(TextMessage message) {
+		TimeVector msgVT = message.timeVector;
+
+		synchronized (CBCASTNetworkManager.class) {
+			for (int i = 0; i < Main.peerCount; i++)
+				if (timeVector.VT.get(i) < msgVT.VT.get(i))
+					timeVector.VT.set(i, msgVT.VT.get(i));
+		}
+		
+		/* Notify the communication protocol that another message has arrived */
+		commProtocol.notifyIncommingMessage();
+	}
+
+
+	/* Deliver message to GUI */
+	public void deliverMessage(TextMessage request) {
+		/* Update receiver's vector time */
+		this.updateVTDeliver(request);
+
+		/* Perform action */
+		switch (request.type) {
+		case TextMessage.DELETE:
+			gui.deleteChar(request.pos);
+			break;
+
+		case TextMessage.INSERT:
+			gui.insertChar(request.pos, request.c);
+			break;
+		}
 	}
 }

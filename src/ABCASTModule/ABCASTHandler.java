@@ -42,6 +42,7 @@ public class ABCASTHandler extends CBCASTHandler {
 
 
 	public void notifyIncommingMessage() {
+		System.out.println("ABCAST notifier");
 		/* Check all messages in the queue to see
 		 * if any of them needs to be delivered
 		 */
@@ -51,8 +52,9 @@ public class ABCASTHandler extends CBCASTHandler {
 					waitingList.remove(tm);
 					uidList.add(((ABCASTTextMessage)tm).uid);
 					nm.deliverMessage(tm);
-				}	
-			finishUIDList();
+				}
+			if (nm.hasToken)
+				finishUIDList();
 		}
 	}
 
