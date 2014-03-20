@@ -15,10 +15,10 @@ import communication.TimeVector;
 
 public class CBCASTNetworkManager extends NetworkManager {
 	public GUIManager gui;
-	private int peerIndex;
+	public int peerIndex;
 
-	private ArrayList<Sender> senders;
-	private ReceiveManager receiver;
+	public ArrayList<Sender> senders;
+	public ReceiveManager receiver;
 	public TimeVector timeVector;
 	public CBCASTHandler commProto;
 
@@ -74,6 +74,9 @@ public class CBCASTNetworkManager extends NetworkManager {
 
 	public void delete(int pos) {
 		System.out.println("I am going to broadcast a deletion at " + pos);
+		
+		/* Update the time vector */
+		timeVector.VT.set(peerIndex, timeVector.VT.get(peerIndex) + 1);
 
 		TextMessage tm = new TextMessage(pos, 'q', TextMessage.DELETE, peerIndex, timeVector);
 		for (int i = 0; i < Main.peerCount - 1; i++)

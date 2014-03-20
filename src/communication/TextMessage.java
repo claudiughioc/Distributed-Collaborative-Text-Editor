@@ -10,6 +10,8 @@ public class TextMessage implements Serializable {
 	public int pos, type, sender;
 	public char c;
 	public TimeVector timeVector;
+
+	public TextMessage() {};
 	
 	public TextMessage(int pos, char c, int type,
 			int sender, TimeVector msgVT) {
