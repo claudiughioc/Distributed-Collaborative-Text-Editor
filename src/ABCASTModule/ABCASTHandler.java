@@ -21,7 +21,7 @@ public class ABCASTHandler extends CBCASTHandler {
 	public ABCASTHandler(ABCASTNetworkManager nm) {
 		super(nm);
 		this.nm = nm;
-		
+
 		System.out.println("HANDLER Constructor nm = " + nm);
 		this.ABCASTList = new LinkedList<ABCASTTextMessage>();
 		this.setOrderList = new LinkedList<TextMessage>();
@@ -46,16 +46,16 @@ public class ABCASTHandler extends CBCASTHandler {
 		/* Check all messages in the queue to see
 		 * if any of them needs to be delivered
 		 */
-		synchronized (ABCASTHandler.class) {
+		synchronized (waitingList) {
 			for (TextMessage tm : waitingList)
 				if (!delayMessage(tm)) {
-					waitingList.remove(tm);
 					uidList.add(((ABCASTTextMessage)tm).uid);
 					nm.deliverMessage(tm);
+					waitingList.remove(tm);
 				}
-			if (nm.hasToken)
-				finishUIDList();
 		}
+		if (nm.hasToken)
+			finishUIDList();
 	}
 
 
@@ -81,8 +81,8 @@ public class ABCASTHandler extends CBCASTHandler {
 
 		return delay;
 	}
-	
-	
+
+
 	/* Determine if a message is before a second one */
 	private boolean before(TextMessage first, TextMessage second) {
 		TimeVector oneTimeVector = first.timeVector;
@@ -96,12 +96,12 @@ public class ABCASTHandler extends CBCASTHandler {
 
 		return before;
 	}
-	
+
 	/* Deliver all the messages before a set order message */
 	public void deliverSetOrderList(TextMessage tm) {
 		ABCASTTextMessage atm = (ABCASTTextMessage)tm;
 		ABCASTTextMessage ref = null;
-		
+
 		for (Integer uid : atm.uidList) {
 			for (ABCASTTextMessage abm : ABCASTList) {
 				if (abm.uid == uid) {
@@ -109,15 +109,15 @@ public class ABCASTHandler extends CBCASTHandler {
 					ABCASTList.remove(abm);
 				}
 			}
-			
+
 			if (ref == null)
 				continue;
-			
+
 			/* Deliver all CBAST and ABCAST messages which precede the refference */
 			for (TextMessage abm : waitingList) {
 				if (((ABCASTTextMessage)abm).uid == ref.uid)
 					continue;
-				
+
 				if (before(abm, ref)) {
 					waitingList.remove(abm);
 					System.out.println("Delivering normal messages");
@@ -129,18 +129,18 @@ public class ABCASTHandler extends CBCASTHandler {
 			waitingList.remove(ref);
 			nm.deliverMessage(ref);
 		}
-		
+
 		/* Remove the set order id message */
 		setOrderList.remove(tm);
 	}
 
-	
+
 	/* Check if all the ABCAST messages have arrived for a set order message */
 	public void checkForDelivery() {
 		boolean allPresent, exists;
 		ABCASTTextMessage atm;
-		
-		
+
+
 		for (TextMessage tm : setOrderList) {
 			atm = (ABCASTTextMessage) tm;
 			allPresent = true;
@@ -155,7 +155,9 @@ public class ABCASTHandler extends CBCASTHandler {
 				}
 			}
 			if (allPresent)
-				deliverSetOrderList(tm);
+				synchronized (waitingList) {
+					deliverSetOrderList(tm);
+				}
 		}
 	}
 
@@ -164,22 +166,19 @@ public class ABCASTHandler extends CBCASTHandler {
 	 */
 	public void nonToken(TextMessage tm) {
 		ABCASTTextMessage atm = (ABCASTTextMessage)tm;
-		
+		System.out.println("NON TOKEN HANDLER\n");
+
 		/* Add the message to a specific queue */
 		switch (atm.phase) {
 		case ABCASTTextMessage.ABCAST_MSG:
 			ABCASTList.add(atm);
-			synchronized (ABCASTHandler.class) {
-				waitingList.add(tm);
-			}
+			waitingList.add(tm);
 			System.out.println("                   ADDING TO ABCAST QUEEUE");
 			break;
 
 		case ABCASTTextMessage.CBAST_MSG:
-			synchronized (ABCASTHandler.class) {
-				System.out.println("                   ADDING TO CBCAST QUEEUE");
-				waitingList.add(tm);
-			}
+			System.out.println("                   ADDING TO CBCAST QUEEUE");
+			waitingList.add(tm);
 			break;
 
 		case ABCASTTextMessage.SET_ORDER:
@@ -187,20 +186,19 @@ public class ABCASTHandler extends CBCASTHandler {
 			setOrderList.add(tm);
 			break;
 		}
-		
+
 		checkForDelivery();
 	}
 
-	public void messageReceived(TextMessage tm) {
+	public synchronized void messageReceived(TextMessage tm) {
 
 		/* The token holder treats any message normally, as CBAST message */
 		if (nm.hasToken) {
-			if (delayMessage(tm))
-				synchronized (ABCASTHandler.class) {
-					System.out.println("                   ADDING TO QUEEUE");
-					waitingList.add(tm);
-				}
-			else {
+			System.out.println("TOOOKKEEEEN");
+			if (delayMessage(tm)) {
+				System.out.println("                   ADDING TO QUEEUE");
+				waitingList.add(tm);
+			} else {
 				startUIDList(tm);
 				nm.deliverMessage(tm);
 			}

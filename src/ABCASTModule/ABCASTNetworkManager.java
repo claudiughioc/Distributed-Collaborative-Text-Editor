@@ -52,7 +52,7 @@ public class ABCASTNetworkManager extends CBCASTNetworkManager {
 		}
 	}
 
-	public void delete(int pos) {
+	public synchronized void delete(int pos) {
 		int newUID = uid++;
 		ABCASTTextMessage tm;
 		System.out.println("ABCAST MANAGER is going to broadcast a deletion at " + pos);
@@ -102,7 +102,7 @@ public class ABCASTNetworkManager extends CBCASTNetworkManager {
 	}
 
 	public void onReceive(TextMessage tm) {
-		this.commProto.messageReceived(tm);
+		this.commProtocol.messageReceived(tm);
 	}
 
 	public synchronized void setToken(boolean value) {
