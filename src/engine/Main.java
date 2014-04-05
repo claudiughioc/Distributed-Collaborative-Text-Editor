@@ -12,6 +12,7 @@ import CBCASTModule.CBCASTNetworkManager;
 import centralizedModule.CentralizedNetworkManager;
 
 import communication.NetworkManager;
+import dopt.DOPTNetworkManager;
 
 public class Main {
 	private static final String CONFIG_FILE 	= "peers";
@@ -19,6 +20,7 @@ public class Main {
 	public static final String ABCAST_ALGO 		= "ABCAST";
 	public static final String TOTAL_ORDER_ALGO = "TOTAL_ORDER";
 	public static final String THREE_PHASE_ALGO = "THREE_PHASE";
+	public static final String DOPT_ALGO		= "DOPT";
 
 	public static ArrayList<String> IPAdresses;
 	public static ArrayList<Integer> ports;
@@ -75,6 +77,8 @@ public class Main {
 			nManag = new ThreePhaseNetworkManager(peerIndex);
 		if (Main.algorithm.equals(ABCAST_ALGO))
 			nManag = new ABCASTNetworkManager(peerIndex);
+		if (Main.algorithm.equals(DOPT_ALGO))
+			nManag = new DOPTNetworkManager(peerIndex);
 
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(nManag);
