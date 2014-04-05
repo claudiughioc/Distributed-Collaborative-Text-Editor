@@ -1,0 +1,6 @@
+GHIOC CLAUDIU - SCPD
+
+All the peers are configured in "peers"
+./run_all.sh - runs three peers
+./run_tests.sh - runs the tests in the "tests" directory (cmd0, cmd1,
+cmd2)
