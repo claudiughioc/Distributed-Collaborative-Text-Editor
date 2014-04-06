@@ -1,15 +1,18 @@
 package dopt;
 
+import engine.Main;
+import gui.GUIManager;
+
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import gui.GUIManager;
 import communication.NetworkManager;
 import communication.ReceiveManager;
 import communication.Sender;
 import communication.TextMessage;
 import communication.TimeVector;
-import engine.Main;
 
 public class DOPTNetworkManager extends NetworkManager{
 	public int peerIndex;
@@ -19,12 +22,13 @@ public class DOPTNetworkManager extends NetworkManager{
 	public TimeVector timeVector;
 	public DOPTHandler handler;
 	public ArrayList<Integer> stateVector;
+	public Lock stateVectorLock = new ReentrantLock();
 	
 	public DOPTNetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
 		handler = new DOPTHandler(this);
 
-		/* Initialize the state cevtor */
+		/* Initialize the state vector */
 		stateVector = new ArrayList<Integer>();
 		for (int i = 0; i < Main.peerCount; i++)
 			stateVector.add(0);
@@ -38,27 +42,25 @@ public class DOPTNetworkManager extends NetworkManager{
 		DOPTTextMessage tm = new DOPTTextMessage(pos, c, TextMessage.INSERT, peerIndex,
 				timeVector, peerIndex, getStateVector());
 
-		/* Add message to queue */
-		handler.addMessage(tm);
-
 		/* Broadcast message */
 		for (int i = 0; i < Main.peerCount - 1; i++)
 			senders.get(i).send(tm);
+
+		updateStateVector(peerIndex);
 	}
 
 	@Override
 	public synchronized void delete(int pos) {
 		System.out.println("I am going to broadcast a deletion at " + pos);
-
+		
 		DOPTTextMessage tm = new DOPTTextMessage(pos, 'q', TextMessage.DELETE, peerIndex,
 				timeVector, peerIndex, getStateVector());
 
-		/* Add message to queue */
-		handler.addMessage(tm);
-		
 		/* Broadcast message */
 		for (int i = 0; i < Main.peerCount - 1; i++)
 			senders.get(i).send(tm);
+	
+		updateStateVector(peerIndex);
 	}
 
 	/* Create the sender and receiver threads */
@@ -102,14 +104,15 @@ public class DOPTNetworkManager extends NetworkManager{
 	}
 
 	@Override
-	public void onReceive(TextMessage tm) {
-		//handler.messageReceived(tm);
-		deliverMessage(tm);
+	public synchronized void onReceive(TextMessage tm) {
+		handler.messageReceived(tm);
 	}
 
 	@Override
 	public void deliverMessage(TextMessage request) {
-		/* Update the state vector */
+		System.out.println("Delivering at " + peerIndex + " msg " + request);
+		/* Removing from message queue */
+		handler.removeMessage(request);
 
 		/* Perform action */
 		switch (request.type) {
@@ -121,14 +124,24 @@ public class DOPTNetworkManager extends NetworkManager{
 			gui.insertChar(request.pos, request.c);
 			break;
 		}
+
+		/* Update the state vector */
+		this.handler.pushLog(request);
+		updateStateVector(request.sender);
 	}
 
 	@Override
 	public GUIManager getGUI() {
-		return null;
+		return gui;
 	}
 
 	public synchronized ArrayList<Integer> getStateVector() {
 		return this.stateVector;
+	}
+
+	public void updateStateVector(int sender) {
+		stateVectorLock.lock();
+		stateVector.set(sender, stateVector.get(sender) + 1);
+		stateVectorLock.unlock();
 	}
 }

@@ -81,7 +81,7 @@ public class Main {
 			nManag = new DOPTNetworkManager(peerIndex);
 
 		/* Start and show the gui */
-		GUIManager gui = new GUIManager(nManag);
+		GUIManager gui = new GUIManager(nManag, peerIndex);
 		nManag.connectToGUI(gui);
 		nManag.start();
 

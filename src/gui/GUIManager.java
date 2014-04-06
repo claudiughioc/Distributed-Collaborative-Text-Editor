@@ -28,12 +28,12 @@ public class GUIManager extends JFrame implements DocumentListener {
 	private NetworkManager messenger;
 	private boolean inserting, deleting;
 
-	public GUIManager(NetworkManager messenger) {
+	public GUIManager(NetworkManager messenger, int peerIndex) {
 
 		/* Save the communicator */
 		this.messenger = messenger;
 		
-		setTitle("Collaborative Text Editor");
+		setTitle("Collaborative Text Editor " + peerIndex);
 		JLabel jLabel1 = new JLabel("Type your text here:");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
