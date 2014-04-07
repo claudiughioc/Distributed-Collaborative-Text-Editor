@@ -10,7 +10,7 @@ public class DOPTTransformation {
 	public static final int DELETE_INSERT = 4;
 
 	public static DOPTTextMessage transform_II(DOPTTextMessage tm1, DOPTTextMessage tm2) {
-		System.out.println("Transforming " + tm1 + " with the help of " + tm2);
+		System.out.println("Transforming " + tm1.hashCode() + ":" + tm1 + " with the help of " + tm2);
 		if (tm1.pos < tm2.pos)
 			return tm1;
 		else if (tm1.pos > tm2.pos) {

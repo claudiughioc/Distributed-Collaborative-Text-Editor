@@ -47,6 +47,7 @@ public class DOPTNetworkManager extends NetworkManager{
 			senders.get(i).send(tm);
 
 		updateStateVector(peerIndex);
+		this.handler.pushLog(tm);
 	}
 
 	@Override
@@ -61,6 +62,7 @@ public class DOPTNetworkManager extends NetworkManager{
 			senders.get(i).send(tm);
 	
 		updateStateVector(peerIndex);
+		this.handler.pushLog(tm);
 	}
 
 	/* Create the sender and receiver threads */
@@ -105,14 +107,14 @@ public class DOPTNetworkManager extends NetworkManager{
 
 	@Override
 	public synchronized void onReceive(TextMessage tm) {
-		handler.messageReceived(tm);
+		handler.messageReceived((DOPTTextMessage)tm);
 	}
 
 	@Override
 	public void deliverMessage(TextMessage request) {
 		System.out.println("Delivering at " + peerIndex + " msg " + request);
 		/* Removing from message queue */
-		handler.removeMessage(request);
+		handler.removeMessage((DOPTTextMessage)request);
 
 		/* Perform action */
 		switch (request.type) {
@@ -126,7 +128,7 @@ public class DOPTNetworkManager extends NetworkManager{
 		}
 
 		/* Update the state vector */
-		this.handler.pushLog(request);
+		this.handler.pushLog((DOPTTextMessage)request);
 		updateStateVector(request.sender);
 	}
 
