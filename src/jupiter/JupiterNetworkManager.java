@@ -61,12 +61,26 @@ public class JupiterNetworkManager extends NetworkManager {
 		int i;
 		JupiterTextMessage rtm = (JupiterTextMessage)tm, initial;
 
+		/* The root peer broadcasts the message */
+		if (peerIndex == Main.rootPeer)
+		for (i = 0; i < Main.peerCount - 1; i++) {
+			if (i == rtm.sender - 1)
+				continue;
+			senders.get(i).send(rtm);
+		}
+		
 		/* Clear the unnecessary messages */
+		System.out.println("MyMessages is " + myMessages + " other is " + otherMessages);
 		System.out.println("Initial outgoing size " + outgoing.size());
 		Iterator<JupiterTextMessage> it = outgoing.iterator();
 		synchronized (outgoing) {
 			while (it.hasNext()) {
 				JupiterTextMessage jtm = it.next();
+				if (jtm == null) {
+					System.out.println("Obiect null in lista");
+					it.remove();
+					continue;
+				}
 				if (jtm.myMessages < rtm.otherMessages)
 					it.remove();
 			}
@@ -98,22 +112,10 @@ public class JupiterNetworkManager extends NetworkManager {
 		}
 
 		deliverMessage(rtm);
-		otherMessages++;
-
-		/* Leave if this is a simple peer */
-		if (peerIndex != Main.rootPeer || rtm == null)
-			return;
-
-		/* The root peer broadcasts the message */
-		rtm.myMessages = myMessages;
-		rtm.otherMessages = otherMessages;
-		for (i = 0; i < Main.peerCount - 1; i++) {
-			if (i == tm.sender - 1)
-				continue;
-			senders.get(i).send(rtm);
-		}
-		if (i > 1)
-			myMessages++;
+		if (rtm != null)
+			otherMessages++;
+		System.out.println("[End]MyMessages is " + myMessages + " other is " + otherMessages);
+		System.out.println();
 	}
 
 	/* Deliver message to GUI */
