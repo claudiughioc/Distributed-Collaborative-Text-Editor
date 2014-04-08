@@ -41,7 +41,7 @@ public class DOPTTransformation {
 	}
 
 	public static DOPTTextMessage transform_ID(DOPTTextMessage tm1, DOPTTextMessage tm2) {
-		if (tm1.pos < tm2.pos)
+		if (tm1.pos <= tm2.pos)
 			return tm1;
 		else {
 			tm1.pos--;

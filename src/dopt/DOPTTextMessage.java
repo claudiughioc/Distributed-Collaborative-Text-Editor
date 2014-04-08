@@ -19,11 +19,14 @@ public class DOPTTextMessage extends TextMessage{
 		this.priority = priority;
 		this.stateVector = stateVector;
 	}
-	
+
 	public String toString() {
 		String s = super.toString() + " prio " + priority + " state: ";
-		for (int i = 0; i < stateVector.size(); i++)
-			s += stateVector.get(i) + " ";
+		if (stateVector != null) {
+			for (int i = 0; i < stateVector.size(); i++)
+				s += stateVector.get(i) + " ";
+		}
 		return s;
 	}
+
 }

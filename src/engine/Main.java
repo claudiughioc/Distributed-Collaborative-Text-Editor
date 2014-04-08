@@ -6,12 +6,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import jupiter.JupiterNetworkManager;
 import threePhaseModule.ThreePhaseNetworkManager;
 import ABCASTModule.ABCASTNetworkManager;
 import CBCASTModule.CBCASTNetworkManager;
 import centralizedModule.CentralizedNetworkManager;
 
 import communication.NetworkManager;
+
 import dopt.DOPTNetworkManager;
 
 public class Main {
@@ -21,10 +23,11 @@ public class Main {
 	public static final String TOTAL_ORDER_ALGO = "TOTAL_ORDER";
 	public static final String THREE_PHASE_ALGO = "THREE_PHASE";
 	public static final String DOPT_ALGO		= "DOPT";
+	public static final String JUPITER_ALGO		= "JUPITER";
 
 	public static ArrayList<String> IPAdresses;
 	public static ArrayList<Integer> ports;
-	public static int peerCount, rootPeer, connectedPeers;
+	public static int peerCount, rootPeer = 0, connectedPeers;
 	public static String algorithm;
 
 
@@ -79,6 +82,8 @@ public class Main {
 			nManag = new ABCASTNetworkManager(peerIndex);
 		if (Main.algorithm.equals(DOPT_ALGO))
 			nManag = new DOPTNetworkManager(peerIndex);
+		if (Main.algorithm.equals(JUPITER_ALGO))
+			nManag = new JupiterNetworkManager(peerIndex);
 
 		/* Start and show the gui */
 		GUIManager gui = new GUIManager(nManag, peerIndex);
