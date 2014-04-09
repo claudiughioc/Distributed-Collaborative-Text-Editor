@@ -6,6 +6,7 @@ import gui.GUIManager;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import communication.NetworkManager;
@@ -17,15 +18,30 @@ public class JupiterNetworkManager extends NetworkManager {
 	public GUIManager gui;
 	public int peerIndex;
 	private ArrayList<Sender> senders;
+	public HashMap<Integer, ArrayList<JupiterTextMessage>> serverOutgoing;
 	private ArrayList<JupiterTextMessage> outgoing;
 	private Sender peerSender;
 	private ReceiveManager receiver;
 	private int myMessages = 0, otherMessages = 0;
+	public ArrayList<Integer> servMessages, serverOther;
 
 	public JupiterNetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
 
 		this.outgoing = new ArrayList<JupiterTextMessage>();
+
+		/* Initialize server specific variables */
+		if (peerIndex == Main.rootPeer) {
+			serverOutgoing = new HashMap<Integer, ArrayList<JupiterTextMessage>>();
+			serverOther = new ArrayList<Integer>();
+			servMessages = new ArrayList<Integer>();
+
+			for (int i = 0; i < Main.peerCount - 1; i++) {
+				serverOutgoing.put(i, new ArrayList<JupiterTextMessage>());
+				serverOther.add(0);
+				servMessages.add(0);
+			}
+		}
 	}
 
 	public void initiateCommThreads() {
@@ -57,22 +73,32 @@ public class JupiterNetworkManager extends NetworkManager {
 		}
 	}
 
-	public synchronized void onReceive(TextMessage tm) {
-		int i;
-		JupiterTextMessage rtm = (JupiterTextMessage)tm, initial;
+	public void printParams() {
+		if (peerIndex == Main.rootPeer) {
+			System.out.print("Server messages: ");
+			for (int i = 0; i < Main.peerCount - 1; i++) {
+				System.out.print(" " + servMessages.get(i));
+			}
+			System.out.println();
+			System.out.print("Server others:");
+			for (int i = 0; i < Main.peerCount - 1; i++) {
+				System.out.print(" " + serverOther.get(i));
+			}
 
-		/* The root peer broadcasts the message */
-		if (peerIndex == Main.rootPeer)
-		for (i = 0; i < Main.peerCount - 1; i++) {
-			if (i == rtm.sender - 1)
-				continue;
-			senders.get(i).send(rtm);
+			System.out.println();
+		}else {
+			System.out.println("MyMessages is " + myMessages + " other is " + otherMessages);
+
 		}
-		
-		/* Clear the unnecessary messages */
-		System.out.println("MyMessages is " + myMessages + " other is " + otherMessages);
-		System.out.println("Initial outgoing size " + outgoing.size());
+	}
+
+	/* Clear the unnecessary messages */
+	public void clearOutgoing(JupiterTextMessage rtm) {
+		if (peerIndex == Main.rootPeer)
+			outgoing = serverOutgoing.get(new Integer(rtm.sender - 1));
+
 		Iterator<JupiterTextMessage> it = outgoing.iterator();
+		System.out.println("Initial outgoing size " + outgoing.size());
 		synchronized (outgoing) {
 			while (it.hasNext()) {
 				JupiterTextMessage jtm = it.next();
@@ -81,10 +107,25 @@ public class JupiterNetworkManager extends NetworkManager {
 					it.remove();
 					continue;
 				}
+				System.out.println("[Queue] " + jtm);
 				if (jtm.myMessages < rtm.otherMessages)
 					it.remove();
 			}
 		}
+		if (peerIndex == Main.rootPeer)
+			serverOutgoing.put(new Integer(rtm.sender - 1), outgoing);
+	}
+
+	public synchronized void onReceive(TextMessage tm) {
+		int i;
+		JupiterTextMessage rtm = (JupiterTextMessage)tm,
+				initial = JupiterTextMessage.duplicate(rtm);
+		printParams();
+		
+
+		/* Clear the unnecessary messages */
+		clearOutgoing(rtm);
+
 
 		/* Assert 
 		if (rtm.myMessages != this.otherMessages) {
@@ -93,6 +134,8 @@ public class JupiterNetworkManager extends NetworkManager {
 		}*/
 
 		/* Transform the message */
+		if (peerIndex == Main.rootPeer)
+			outgoing = serverOutgoing.get(new Integer(rtm.sender - 1));
 		System.out.println("After outgoing size " + outgoing.size());
 		for (i = 0; i < outgoing.size(); i++) {
 			JupiterTextMessage elem = outgoing.get(i);
@@ -111,10 +154,29 @@ public class JupiterNetworkManager extends NetworkManager {
 				break;
 		}
 
+		/* All the peers apply the message transformed */
 		deliverMessage(rtm);
-		if (rtm != null)
+
+		/* They also update the otherMessages field */
+		if (peerIndex == Main.rootPeer) {
+			serverOther.set(initial.sender - 1, serverOther.get(initial.sender - 1) + 1);
+			serverOutgoing.put(new Integer(initial.sender - 1), outgoing);
+		} else
 			otherMessages++;
-		System.out.println("[End]MyMessages is " + myMessages + " other is " + otherMessages);
+
+		/* The client peers return */
+		if (peerIndex != Main.rootPeer || rtm == null) {
+			printParams();
+			System.out.println("----------------------------");
+			System.out.println();
+			return;
+		}
+
+		/* The root peer broadcasts the message as if it was his*/
+		rtm.priority = this.peerIndex;
+		prepareSendMessage(rtm, true);
+		printParams();
+		System.out.println("----------------------------");
 		System.out.println();
 	}
 
@@ -159,6 +221,31 @@ public class JupiterNetworkManager extends NetworkManager {
 		for (int i = 0; i < Main.peerCount - 1; i++)
 			senders.get(i).start();
 	}
+
+	public synchronized void prepareSendMessage(JupiterTextMessage tm, boolean ignoreSender) {
+		/* Send message to the server */
+		if (peerIndex != Main.rootPeer) {
+			peerSender.send(tm);
+			myMessages++;
+			outgoing.add(tm);
+		} else {
+			/* Broadcast message */
+			for (int i = 0; i < Main.peerCount - 1; i++) {
+				if (ignoreSender && (i == tm.sender - 1))
+					continue;
+				tm.otherMessages = serverOther.get(i);
+				tm.myMessages = servMessages.get(i);
+				senders.get(i).send(tm);
+
+				/* Add the message to the list of outgoing */
+				outgoing = serverOutgoing.get(new Integer(i));
+				outgoing.add(tm);
+				serverOutgoing.put(new Integer(i), outgoing);
+				servMessages.set(i, servMessages.get(i) + 1);
+			}
+		}
+	}
+
 	@Override
 	public synchronized void insert(int pos, char c) {
 		System.out.println("I am going to broadcast an insertion " + c + " at " + pos);
@@ -167,19 +254,7 @@ public class JupiterNetworkManager extends NetworkManager {
 		JupiterTextMessage tm = new JupiterTextMessage(pos, c, TextMessage.INSERT, peerIndex,
 				null, peerIndex, myMessages, otherMessages);
 
-		/* Broadcast message */
-		if (peerIndex != Main.rootPeer) {
-			peerSender.send(tm);
-		} else {
-			for (int i = 0; i < Main.peerCount - 1; i++)
-				senders.get(i).send(tm);
-		}
-
-		/* Add the message to the list of outgoing */
-		synchronized (outgoing) {
-			outgoing.add(tm);	
-		}
-		myMessages++;
+		prepareSendMessage(tm, false);
 	}
 
 	@Override
@@ -189,18 +264,6 @@ public class JupiterNetworkManager extends NetworkManager {
 		JupiterTextMessage tm = new JupiterTextMessage(pos, 'q', TextMessage.DELETE, peerIndex,
 				null, peerIndex, myMessages, otherMessages);
 
-		/* Broadcast message */
-		if (peerIndex != Main.rootPeer) {
-			peerSender.send(tm);
-		} else {
-			for (int i = 0; i < Main.peerCount - 1; i++)
-				senders.get(i).send(tm);
-		}
-
-		/* Add the message to the list of outgoing */
-		synchronized (outgoing) {
-			outgoing.add(tm);	
-		}
-		myMessages++;
+		prepareSendMessage(tm, false);
 	}
 }
