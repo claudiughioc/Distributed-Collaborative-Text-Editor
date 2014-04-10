@@ -127,4 +127,15 @@
 		</java>
 	</target>
 
+	<target name="peer5_test">
+		<java classname="engine.Main" fork="true">
+			<classpath>
+				<pathelement path="bin/"/>
+				<path refid="master-classpath"/>
+			</classpath>
+			<arg value="5"/>
+			<arg value="test"/>
+		</java>
+	</target>
+
 </project>

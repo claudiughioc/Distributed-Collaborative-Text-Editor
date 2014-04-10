@@ -34,9 +34,6 @@ for (( i=0; i<$NR_PEERS; i++)); do
 	echo "$((i * 2 + 1)) received$i $received" >> traffic.dat
 done
 
-echo "Closing the editor..."
-killall -9 java
-
 echo "Showing traffic statistics"
 gnuplot traffic.plt
 feh traffic.png
