@@ -24,6 +24,7 @@ public class JupiterNetworkManager extends NetworkManager {
 	private ReceiveManager receiver;
 	private int myMessages = 0, otherMessages = 0;
 	public ArrayList<Integer> servMessages, serverOther;
+	public static Object lock = new Object();
 
 	public JupiterNetworkManager(int peerIndex) {
 		this.peerIndex = peerIndex;
@@ -178,19 +179,24 @@ public class JupiterNetworkManager extends NetworkManager {
 	/* Deliver message to GUI */
 	public synchronized void deliverMessage(TextMessage request) {
 		System.out.println("Delivering " + request);
-		if (request == null)
+		if (request == null) {
+			System.out.println("The message to be delivered is null");
 			return;
+		}
 
 		/* Perform action */
-		switch (request.type) {
-		case TextMessage.DELETE:
-			gui.deleteChar(request.pos);
-			break;
+		synchronized (JupiterNetworkManager.lock) {
+			switch (request.type) {
+			case TextMessage.DELETE:
+				gui.deleteChar(request.pos);
+				break;
 
-		case TextMessage.INSERT:
-			gui.insertChar(request.pos, request.c);
-			break;
+			case TextMessage.INSERT:
+				gui.insertChar(request.pos, request.c);
+				break;
+			}
 		}
+		System.out.println("Am iesit din deliver");
 	}
 
 	public void connectToGUI(GUIManager gui) {

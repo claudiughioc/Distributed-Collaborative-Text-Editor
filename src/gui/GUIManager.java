@@ -132,16 +132,18 @@ public class GUIManager extends JFrame implements DocumentListener {
 	
 	/* Insert a char in document */
 	public synchronized void insertCharInDoc(int pos, char c) {
+		System.out.println("Intru sa inserez");
 		if (pos > textArea.getDocument().getLength() + 1) {
 			System.out.println("Delete from pos " + pos + " char " + c);
 			pos = textArea.getDocument().getLength() + 1;
 		}
-			
+		System.out.println("Inainte de incercare");
 		try {
 			textArea.getDocument().insertString(pos, Character.toString(c), null);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+		System.out.println("ies de la inserat");
 	}
 
 	/* Insert a char as dictated by other peers */
@@ -156,6 +158,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	
 	/* Delete a char from the document */
 	public synchronized void deleteCharFromDoc(int pos) {
+		System.out.println("Ies de la sters");
 		if (pos > textArea.getDocument().getLength() + 1) {
 			System.out.println("Delete from pos " + pos);
 			pos = textArea.getDocument().getLength() + 1;
@@ -165,6 +168,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Ies de la sters");
 	}
 
 	/* Delete a char, as dictated by other peers */
