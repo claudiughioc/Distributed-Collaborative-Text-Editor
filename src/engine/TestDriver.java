@@ -22,12 +22,11 @@ public class TestDriver {
 
 			while(true) {
 				String command = buff.readLine();
-				System.out.println("Command " + command);
+				System.out.println("["+ Thread.currentThread().getId() + "]" + " Command " + command);
 				if (command == null)
 					break;
 
 				synchronized (JupiterNetworkManager.lock) {
-
 					if (command.substring(0, 3).equals(COMMAND_INS))
 						gui.insertCharInDoc(Integer.parseInt(command.substring(8, 9)) - 1, command.charAt(5));
 					if (command.substring(0, 3).equals(COMMAND_DEL))
@@ -42,6 +41,8 @@ public class TestDriver {
 			System.out.println("Unable to read command file");
 			e.printStackTrace();
 		}
+
+		System.out.println("Traffic:" + Main.sentBytes + " " + Main.receivedBytes);
 	}
 
 	private static int randomWithRange(int min, int max)

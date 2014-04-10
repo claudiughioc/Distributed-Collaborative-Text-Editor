@@ -29,6 +29,7 @@ public class Main {
 	public static ArrayList<Integer> ports;
 	public static int peerCount, rootPeer = 0, connectedPeers;
 	public static String algorithm;
+	public static long receivedBytes, sentBytes;
 
 
 	/* Read peer configuration file */

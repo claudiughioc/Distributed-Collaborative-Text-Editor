@@ -103,7 +103,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	@Override
-	public synchronized void insertUpdate(DocumentEvent e) {
+	public void insertUpdate(DocumentEvent e) {
 		int pos = e.getOffset();
 		Document doc = (Document)e.getDocument();
 		char c = 'q';
@@ -122,7 +122,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	@Override
-	public synchronized void removeUpdate(DocumentEvent e) {
+	public void removeUpdate(DocumentEvent e) {
 		/* Send the event to the communicator */
 		if (deleting)
 			return;
@@ -132,23 +132,23 @@ public class GUIManager extends JFrame implements DocumentListener {
 	
 	/* Insert a char in document */
 	public synchronized void insertCharInDoc(int pos, char c) {
-		System.out.println("Intru sa inserez");
+		System.out.println("["+ Thread.currentThread().getId() + "]" +" Intru sa inserez");
 		if (pos > textArea.getDocument().getLength() + 1) {
 			System.out.println("Delete from pos " + pos + " char " + c);
 			pos = textArea.getDocument().getLength() + 1;
 		}
-		System.out.println("Inainte de incercare");
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " Inainte de incercare");
 		try {
 			textArea.getDocument().insertString(pos, Character.toString(c), null);
-		} catch (BadLocationException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("ies de la inserat");
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " ies de la inserat");
 	}
 
 	/* Insert a char as dictated by other peers */
 	public synchronized void insertChar(int pos, char c) {
-		System.out.println("Must insert char " + c + " at " + pos);
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " Must insert char " + c + " at " + pos);
 		
 		inserting = true;
 		insertCharInDoc(pos, c);
@@ -173,7 +173,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 
 	/* Delete a char, as dictated by other peers */
 	public synchronized void deleteChar(int pos) {
-		System.out.println("Must delete char from pos " + pos);
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " Must delete char from pos " + pos);
 		
 		deleting = true;
 		deleteCharFromDoc(pos);

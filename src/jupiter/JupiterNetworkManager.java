@@ -178,7 +178,7 @@ public class JupiterNetworkManager extends NetworkManager {
 
 	/* Deliver message to GUI */
 	public synchronized void deliverMessage(TextMessage request) {
-		System.out.println("Delivering " + request);
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " Delivering " + request);
 		if (request == null) {
 			System.out.println("The message to be delivered is null");
 			return;
@@ -196,7 +196,7 @@ public class JupiterNetworkManager extends NetworkManager {
 				break;
 			}
 		}
-		System.out.println("Am iesit din deliver");
+		System.out.println("["+ Thread.currentThread().getId() + "]" + " Am iesit din deliver");
 	}
 
 	public void connectToGUI(GUIManager gui) {

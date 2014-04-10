@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import engine.Main;
 import engine.Utils;
 
 public class Sender extends Thread {
@@ -56,6 +57,7 @@ public class Sender extends Thread {
 		try {
 			byte[] serialized = Utils.serialize(tm);
 			int size = serialized.length;
+			Main.sentBytes += size;
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 			dos.writeInt(size);
 			dos.write(serialized);

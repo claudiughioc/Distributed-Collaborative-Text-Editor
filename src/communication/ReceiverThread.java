@@ -3,6 +3,7 @@ package communication;
 import java.io.DataInputStream;
 import java.net.Socket;
 
+import engine.Main;
 import engine.Utils;
 
 public class ReceiverThread extends Thread {
@@ -23,6 +24,7 @@ public class ReceiverThread extends Thread {
 			/* Wait for messages from the other peer */
 			while(true) {
 				int size = din.readInt();
+				Main.receivedBytes += size;
 				byte[] bytes = new byte[size];
 				din.readFully(bytes);
 				TextMessage request = (TextMessage)Utils.deserialize(bytes);

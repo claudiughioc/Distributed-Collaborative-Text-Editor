@@ -1,13 +1,42 @@
 #!/bin/bash
 
+if [ $# -lt 1 ]; then
+	echo "Usage $0 nr_peers"
+	exit
+fi
+
+NR_PEERS=$1
+ANT_CMD="ant peer"
+EXT="test"
+SEP="_"
+
 ant build
 
-ant peer0_test &> out0 &
-sleep 0.1
-ant peer1_test &> out1 &
-sleep 0.1
-ant peer2_test %> out2 &
-sleep 0.1
-ant peer3_test %> out3 &
-sleep 0.1
-ant peer4_test %> out4 &
+for (( i=0; i<$NR_PEERS; i++)); do
+	# Build the command
+	CMD="$ANT_CMD$i$SEP$EXT"
+
+
+	# Run the peer and redirect the output
+	echo "Running $CMD"
+	$CMD &> "out$i" &
+done
+
+echo "Waiting for test to finish"
+sleep 15
+echo "Test finished, gathering statistics..."
+
+rm -f traffic.dat
+for (( i=0; i<$NR_PEERS; i++)); do
+	sent=`cat "out$i" | grep Traffic | cut -d ':' -f 2 | cut -d ' ' -f 1`
+	received=`cat "out$i" | grep Traffic | cut -d ':' -f 2 | cut -d ' ' -f 2`
+	echo "$((i * 2)) sent$i $sent" >> traffic.dat
+	echo "$((i * 2 + 1)) received$i $received" >> traffic.dat
+done
+
+echo "Closing the editor..."
+killall -9 java
+
+echo "Showing traffic statistics"
+gnuplot traffic.plt
+feh traffic.png
