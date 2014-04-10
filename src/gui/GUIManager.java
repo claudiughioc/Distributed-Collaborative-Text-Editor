@@ -103,7 +103,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	@Override
-	public void insertUpdate(DocumentEvent e) {
+	public synchronized void insertUpdate(DocumentEvent e) {
 		int pos = e.getOffset();
 		Document doc = (Document)e.getDocument();
 		char c = 'q';
@@ -122,7 +122,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 	}
 
 	@Override
-	public void removeUpdate(DocumentEvent e) {
+	public synchronized void removeUpdate(DocumentEvent e) {
 		/* Send the event to the communicator */
 		if (deleting)
 			return;
@@ -131,7 +131,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 
 	
 	/* Insert a char in document */
-	public void insertCharInDoc(int pos, char c) {
+	public synchronized void insertCharInDoc(int pos, char c) {
 		if (pos > textArea.getDocument().getLength() + 1) {
 			System.out.println("Delete from pos " + pos + " char " + c);
 			pos = textArea.getDocument().getLength() + 1;
@@ -155,7 +155,7 @@ public class GUIManager extends JFrame implements DocumentListener {
 
 	
 	/* Delete a char from the document */
-	public void deleteCharFromDoc(int pos) {
+	public synchronized void deleteCharFromDoc(int pos) {
 		if (pos > textArea.getDocument().getLength() + 1) {
 			System.out.println("Delete from pos " + pos);
 			pos = textArea.getDocument().getLength() + 1;

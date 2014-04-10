@@ -73,7 +73,7 @@ public class JupiterNetworkManager extends NetworkManager {
 		}
 	}
 
-	public void printParams() {
+	public synchronized void printParams() {
 		if (peerIndex == Main.rootPeer) {
 			System.out.print("Server messages: ");
 			for (int i = 0; i < Main.peerCount - 1; i++) {
@@ -93,27 +93,27 @@ public class JupiterNetworkManager extends NetworkManager {
 	}
 
 	/* Clear the unnecessary messages */
-	public void clearOutgoing(JupiterTextMessage rtm) {
+	public synchronized void clearOutgoing(JupiterTextMessage rtm) {
 		if (peerIndex == Main.rootPeer)
 			outgoing = serverOutgoing.get(new Integer(rtm.sender - 1));
 
 		Iterator<JupiterTextMessage> it = outgoing.iterator();
 		System.out.println("Initial outgoing size " + outgoing.size());
-		synchronized (outgoing) {
-			while (it.hasNext()) {
-				JupiterTextMessage jtm = it.next();
-				if (jtm == null) {
-					System.out.println("Obiect null in lista");
-					it.remove();
-					continue;
-				}
-				System.out.println("[Queue] " + jtm);
-				if (jtm.myMessages < rtm.otherMessages)
-					it.remove();
+		while (it.hasNext()) {
+			JupiterTextMessage jtm = it.next();
+			if (jtm == null) {
+				System.out.println("Obiect null in lista");
+				it.remove();
+				continue;
 			}
+			System.out.println("[Queue] " + jtm);
+			if (jtm.myMessages < rtm.otherMessages)
+				it.remove();
 		}
-		if (peerIndex == Main.rootPeer)
+		if (peerIndex == Main.rootPeer) {
+			System.out.println("In clear pun coada la " + (rtm.sender - 1));
 			serverOutgoing.put(new Integer(rtm.sender - 1), outgoing);
+		}
 	}
 
 	public synchronized void onReceive(TextMessage tm) {
@@ -121,17 +121,11 @@ public class JupiterNetworkManager extends NetworkManager {
 		JupiterTextMessage rtm = (JupiterTextMessage)tm,
 				initial = JupiterTextMessage.duplicate(rtm);
 		printParams();
-		
+
 
 		/* Clear the unnecessary messages */
 		clearOutgoing(rtm);
 
-
-		/* Assert 
-		if (rtm.myMessages != this.otherMessages) {
-			System.out.println("Asertul pica, mesajul are my = " + rtm.myMessages + " eu am " + otherMessages);
-			System.exit(1);
-		}*/
 
 		/* Transform the message */
 		if (peerIndex == Main.rootPeer)
@@ -145,27 +139,28 @@ public class JupiterNetworkManager extends NetworkManager {
 			initial = JupiterTextMessage.duplicate(rtm);
 			rtm = (JupiterTextMessage)DOPTTransformation.transform(rtm, elem);
 			elem = (JupiterTextMessage)DOPTTransformation.transform(elem, initial);
-			synchronized ((outgoing)) {
-				if (initial != null)
-					outgoing.set(i, elem);
-				else outgoing.remove(i);	
-			}
+			if (initial != null)
+				outgoing.set(i, elem);
+			else outgoing.remove(i);	
 			if (rtm == null || elem == null)
 				break;
 		}
 
 		/* All the peers apply the message transformed */
 		deliverMessage(rtm);
+		System.out.println("All delivered");
 
 		/* They also update the otherMessages field */
 		if (peerIndex == Main.rootPeer) {
 			serverOther.set(initial.sender - 1, serverOther.get(initial.sender - 1) + 1);
+			System.out.println("Pun coada inapoi la " + (initial.sender - 1));
 			serverOutgoing.put(new Integer(initial.sender - 1), outgoing);
 		} else
 			otherMessages++;
 
 		/* The client peers return */
 		if (peerIndex != Main.rootPeer || rtm == null) {
+			System.out.println("Inainte de print params");
 			printParams();
 			System.out.println("----------------------------");
 			System.out.println();
@@ -181,7 +176,7 @@ public class JupiterNetworkManager extends NetworkManager {
 	}
 
 	/* Deliver message to GUI */
-	public void deliverMessage(TextMessage request) {
+	public synchronized void deliverMessage(TextMessage request) {
 		System.out.println("Delivering " + request);
 		if (request == null)
 			return;
@@ -223,6 +218,7 @@ public class JupiterNetworkManager extends NetworkManager {
 	}
 
 	public synchronized void prepareSendMessage(JupiterTextMessage tm, boolean ignoreSender) {
+		JupiterTextMessage forQueue;
 		/* Send message to the server */
 		if (peerIndex != Main.rootPeer) {
 			peerSender.send(tm);
@@ -233,17 +229,19 @@ public class JupiterNetworkManager extends NetworkManager {
 			for (int i = 0; i < Main.peerCount - 1; i++) {
 				if (ignoreSender && (i == tm.sender - 1))
 					continue;
-				tm.otherMessages = serverOther.get(i);
-				tm.myMessages = servMessages.get(i);
-				senders.get(i).send(tm);
+				forQueue = JupiterTextMessage.duplicate(tm);
+				forQueue.otherMessages = serverOther.get(i).intValue();
+				forQueue.myMessages = servMessages.get(i).intValue();
+				senders.get(i).send(forQueue);
 
 				/* Add the message to the list of outgoing */
 				outgoing = serverOutgoing.get(new Integer(i));
-				outgoing.add(tm);
+				outgoing.add(forQueue);
 				serverOutgoing.put(new Integer(i), outgoing);
 				servMessages.set(i, servMessages.get(i) + 1);
 			}
 		}
+		System.out.println("Am iesit din functia de trimies");
 	}
 
 	@Override

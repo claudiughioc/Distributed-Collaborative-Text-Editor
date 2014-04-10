@@ -48,7 +48,7 @@ public class Sender extends Thread {
 	
 	
 	/* Sends an event message to the peer the sender is connected to */
-	public void send(TextMessage tm) {
+	public synchronized void send(TextMessage tm) {
 		if (!connected)
 			return;
 		
